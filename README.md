@@ -1,8 +1,10 @@
 # CPU em VHDL - Disciplina Sistema Digitais
 
-Nome: Gabriel de Araujo Nusp: 14571376
-Nome: Gabriel Demba Nusp: 156568344
-Nome: Luis Ponciano Nusp: 15577760
+### Nome: Gabriel de Araujo Nusp: 14571376
+
+### Nome: Gabriel Demba Nusp: 156568344
+
+### Nome: Luis Ponciano Nusp: 15577760
 
 Observação IMPORTANTE!
 Conforme falamos por e-mail,iremos realizar algumas mudanças posteriores principalmente em como o registerCode funciona, devido a essa mudança ira mudar o assembly.py
