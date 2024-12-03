@@ -1,0 +1,12 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity cpu is
+    Port ( b : in  STD_LOGIC_VECTOR(7 downto 0);
+           a : out STD_LOGIC_VECTOR(7 downto 0) );
+end cpu;
+
+architecture Behavioral of cpu is
+begin
+    a <= b;  -- Atribuição simples de b para a
+end Behavioral;
