@@ -1,0 +1,17 @@
+IN A; Lê as entradas em A
+IN B; Lê as entradas em B
+MOV R 0; Armazena 0 em R
+STORE R 255; Armazena R no endereço 255
+MOV R A; Armazena o valor de A em R ( R = A )
+LOOP_START
+  SUB R B; R =R - B
+  MOV A R; A = R
+  LOAD R 255; R = ADDR (255)
+  ADD R 1; R = R +1
+  STORE R 255; ADDR (255) = R
+  MOV R A; R = A
+  CMP R B;
+  JGR LOOP_START; R > B? Vai para LOOP_START
+LOAD R 255; R = ADDR (255)
+OUT R; Coloca na saída o valor de R
+WAIT
