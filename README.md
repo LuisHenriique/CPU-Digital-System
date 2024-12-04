@@ -107,6 +107,4 @@ Este código foi implementado para ser executado em uma plataforma de simulaçã
 
 Este projeto simula uma CPU simples com um conjunto básico de operações. Ele pode ser expandido para incluir mais instruções ou melhorias no gerenciamento de estado e controle. Além disso, pode ser adaptado para se integrar a sistemas mais complexos.
 
-## Licença
 
-Este projeto está licenciado sob a Licença MIT. Veja o arquivo LICENSE para mais detalhes.
