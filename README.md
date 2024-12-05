@@ -7,7 +7,7 @@
 #### Nome: Luis Ponciano Nusp: 15577760
 
 Observação IMPORTANTE!
-Conforme falamos por e-mail,iremos realizar algumas mudanças posteriores principalmente em como o registerCode funciona, devido a essa mudança ira mudar o assembly.py
+Conforme falamos por e-mail,iremos realizar algumas mudanças posteriores principalmente em como o registerCode funciona, devido a essa mudança ira alterar o assembly.py
 
 Este projeto simula uma CPU simples utilizando VHDL, implementando um ciclo básico de instruções com unidades de controle, ALU (Unidade Lógica Aritmética), memória e registradores. A CPU executa uma série de operações lógicas e aritméticas, e é capaz de realizar operações de leitura e escrita na memória.
 
