@@ -106,7 +106,7 @@ begin
                 
             -- "0100": NOT (INVERTE OS BITS DO VETOR)
             when "0100" => 
-                internal_output <= NOT input1;
+                internal_output <= NOT input2;
                 
             -- Caso padrão
             when others => 

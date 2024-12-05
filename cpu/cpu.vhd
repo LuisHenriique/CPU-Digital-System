@@ -15,7 +15,8 @@ architecture Behavioral of cpu is
 
    type state_type is (FETCH, DECODE, EXECUTE, MEM_ACCESS, WRITE_BACK, ADD1, SUB1, 
 	AND1, OR1, NOT1, CMP1, PROXIMA_LINHA_ENDERECO, PROXIMA_LINHA_ENDERECO1, LOAD, LOAD1,
-	STORE, STORE1, MOV, MOV1, FETCH1, LOAD2, LOAD3, LOAD4, STORE2, STORE3, STORE4);
+	STORE, STORE1, MOV, MOV1, FETCH1, LOAD2, LOAD3, LOAD4, STORE2, STORE3, STORE4, WAIT1,
+	LER_IMEDIATO, LER_IMEDIATO1, LER_IMEDIATO2, LER_IMEDIATO3, CMP2, PROXIMA_LINHA_ENDERECO2);
 	signal state : state_type := FETCH;    -- Estado inicial
 	
 	type rom_type is array (0 to 255) of STD_LOGIC_VECTOR(7 downto 0);
@@ -114,13 +115,41 @@ begin
         elsif rising_edge(clk) then
                 -- Etapa de Fetch
 					case state is
+					 when LER_IMEDIATO =>
+						endereco <= std_logic_vector(unsigned(pc_reg));
+						habilitar_escrita <= '0';
+						state <= LER_IMEDIATO1;
+					 when LER_IMEDIATO1 =>
+						state <= LER_IMEDIATO2;
+					 when LER_IMEDIATO2 =>
+						alu_input2 <= data_out;
+						state <= LER_IMEDIATO3; 	
+					when LER_IMEDIATO3 =>
+						case opCode is
+							when "0110" =>
+								state <= NOT1; -- PRECISA SER FLEXIVEL
+							when "0100" =>
+								state <= AND1;
+							when "0101" =>
+								state <= OR1;
+							when "0010" =>
+								state <= ADD1;
+							when "0011" =>
+								state <= SUB1;
+							when "0111" =>
+								state <= CMP1;
+							when others =>
+								state <= FETCH;
+						end case;
 					 when PROXIMA_LINHA_ENDERECO =>
-						 pc_reg <= std_logic_vector(unsigned(pc_reg) + 1); -- Atualizar o PC									
-						 endereco <= pc_reg;
+						 --pc_reg <= std_logic_vector(unsigned(pc_reg) - 1); -- Atualizar o PC	
+						 endereco <= std_logic_vector(unsigned(pc_reg) -1);
 						 habilitar_escrita <= '0';
 						 state <= PROXIMA_LINHA_ENDERECO1;
 					 when PROXIMA_LINHA_ENDERECO1 =>
-						 pc_reg <= data_out; -- MUDAR ESSA MEMORIA       
+					    state <= PROXIMA_LINHA_ENDERECO2;
+					 when PROXIMA_LINHA_ENDERECO2 =>
+						 pc_reg <= data_out;
 						 state <= FETCH;
                 when FETCH =>
                     -- Buscar a instrução da memória (usando o PC)
@@ -143,7 +172,7 @@ begin
 										when "0001" =>
 											outputPlaca <= reg2;
 										when "0010" =>
-											reg_data <= alu_result;
+											--reg_data <= alu_result;
 											outputPlaca <= reg_data;
 										when others =>
 											state <= FETCH;
@@ -164,105 +193,155 @@ begin
 								when "0010" => -- ADICAO ULA
 									alu_comando <= "0000";
 									case registerCode is
-										when "0000" =>
+										when "0001" =>
 											alu_input1 <= reg1; -- A + B
 											alu_input2 <= reg2;
-										when "0001" =>
+										when "0010" =>
 											alu_input1 <= reg1; -- A + R
 											alu_input2 <= reg_data;
-										when "0010" =>
+										when "0110" =>
 											alu_input1 <= reg2; -- B + R
-											alu_input2 <= reg_data;
-										when "1111" =>
-											alu_input1 <= reg_data; -- B + R
 											alu_input2 <= reg_data;
 										when "0011" =>
-											alu_input1 <= reg1; -- B + R
-											alu_input2 <= "11111111";
+											alu_input1 <= reg1; -- A + IMEDIATO
 										when "0111" =>
-											alu_input1 <= reg2; -- B + R
-											alu_input2 <= "11111111";
+											alu_input1 <= reg2; -- B + IMEDIATO
 										when "1011" =>
-											alu_input1 <= reg_data; -- B + R
-											alu_input2 <= "11111111";
-										--	state;
+											alu_input1 <= reg_data; -- R + IMEDIATO
 										when others =>
 											state <= FETCH;
 									end case;
-									state <= ADD1;
+									if registerCode = "0011" or registerCode = "0111" or registerCode = "1011" then
+										pc_reg <= std_logic_vector(unsigned(pc_reg) - 1);
+										state <= LER_IMEDIATO;
+									else
+										state <= ADD1;
+									end if;
 								when "0011" => -- SUBTRACAO ULA
 									alu_comando <= "0001";
 									case registerCode is
-										when "0000" =>
+										when "0001" => -- A - B
 											alu_input1 <= reg1;
 											alu_input2 <= reg2;
-										when "0001" =>
+										when "0100" => -- B - A
 											alu_input1 <= reg2;
 											alu_input2 <= reg1;
-										when "0010" =>
+										when "0010" => -- A - R
 											alu_input1 <= reg1;
 											alu_input2 <= reg_data;
-										when "0011" =>
+										when "1000" => -- R - A
 											alu_input1 <= reg_data;
 											alu_input2 <= reg1;
-										when "0100" =>
+										when "0110" => -- B - R
 											alu_input1 <= reg2;
 											alu_input2 <= reg_data;
-										when "0101" =>
+										when "1001" => -- R - B
 											alu_input1 <= reg_data;
 											alu_input2 <= reg2;
+										-- COM IMEDIATO -----------------------
+										when "0011" => -- A - IMEDIATO
+											alu_input1 <= reg1;
+										when "0111" => -- B - IMEDIATO
+											alu_input1 <= reg2;
+										when "1011" => -- R - IMEDIATO
+											alu_input1 <= reg_data;
+										-- COM IMEDIATO -------------------
+										when "1100" => -- IMEDIATO - A
+											-- definir alu_input1 conforme a proxima linha lida
+											alu_input2 <= reg1;
+										when "1101" => -- IMEDIATO - B
+											-- definir alu_input1 conforme a proxima linha lida
+											alu_input2 <= reg2;
+										when "1110" => -- IMEDIATO - R
+											-- definir alu_input1 conforme a proxima linha lida
+											alu_input2 <= reg_data;
 										when others =>
 											state <= FETCH;
 									end case;
-									state <= SUB1;
+									if registerCode = "0011" or registerCode = "0111" or registerCode = "1011" then
+										pc_reg <= std_logic_vector(unsigned(pc_reg) - 1);
+										state <= LER_IMEDIATO;
+									else
+										state <= SUB1;
+									end if;
 								when "0100" => -- AND ULA
 									alu_comando <= "0010";
 									case registerCode is
-										when "0000" =>
-											alu_input1 <= reg1; -- A + B
+										when "0001" => -- A AND B
+											alu_input1 <= reg1;
 											alu_input2 <= reg2;
-										when "0001" =>
-											alu_input1 <= reg1; -- A + R
+										when "0010" => -- A AND R
+											alu_input1 <= reg1;
 											alu_input2 <= reg_data;
-										when "0010" =>
-											alu_input1 <= reg2; -- B + R
+										when "0110" => -- B AND R
+											alu_input1 <= reg2;
 											alu_input2 <= reg_data;
+										when "0011" => -- A AND IMEDIATO
+											alu_input1 <= reg1;
+										when "0111" => -- B AND IMEDIATO
+											alu_input1 <= reg2;
+										when "1011" => -- R AND IMEDIATO
+											alu_input1 <= reg_data;
 										when others =>
 											state <= FETCH;
 									end case;
-									state <= AND1;
+									if registerCode = "0011" or registerCode = "0111" or registerCode = "1011" then
+										pc_reg <= std_logic_vector(unsigned(pc_reg) - 1);
+										state <= LER_IMEDIATO;
+									else
+										state <= AND1;
+									end if;
 								when "0101" => -- OR ULA
 									alu_comando <= "0011";
 									case registerCode is
-										when "0000" =>
-											alu_input1 <= reg1; -- A + B
+										when "0001" => -- A OR B
+											alu_input1 <= reg1;
 											alu_input2 <= reg2;
-										when "0001" =>
-											alu_input1 <= reg1; -- A + R
+										when "0010" => -- A OR R
+											alu_input1 <= reg1;
 											alu_input2 <= reg_data;
-										when "0010" =>
-											alu_input1 <= reg2; -- B + R
+										when "0110" => -- B OR R
+											alu_input1 <= reg2;
 											alu_input2 <= reg_data;
+										when "0011" => -- A OR IMEDIATO
+											alu_input1 <= reg1;
+											--alu_input2 <= reg_data;
+										when "0111" => -- B OR IMEDIATO
+											alu_input1 <= reg2;
+										when "1011" => -- R OR IMEDIATO
+											alu_input1 <= reg_data;
 										when others =>
 											state <= FETCH;
 									end case;
-									state <= OR1;
+									if registerCode = "0011" or registerCode = "0111" or registerCode = "1011" then
+										pc_reg <= std_logic_vector(unsigned(pc_reg) - 1);
+										state <= LER_IMEDIATO;
+									else
+										state <= OR1;
+									end if;
 								when "0110" => -- NOT ULA
 									alu_comando <= "0100";
 									case registerCode is
-										when "0000" =>
-											alu_input1 <= reg1; -- A + B
+										when "0000" => -- NOT A
+											alu_input2 <= reg1;
 											--alu_input2 <= reg2;
-										when "0001" =>
-											alu_input1 <= reg2; -- A + R
+										when "0001" => -- NOT B
+											alu_input2 <= reg2;
 											--alu_input2 <= reg_data;
-										when "0010" =>
-											alu_input1 <= reg_data; -- B + R
+										when "0010" => -- NOT R
+											alu_input2 <= reg_data;
 											--alu_input2 <= reg_data;
+										--when "0011" => -- NOT IMEDIATO
+											--state <= LER_IMEDIATO;
 										when others =>
 											state <= FETCH;
 									end case;
-									state <= NOT1;
+									if registerCode = "0011" then
+										pc_reg <= std_logic_vector(unsigned(pc_reg) - 1);
+										state <= LER_IMEDIATO;
+									else
+										state <= NOT1;
+									end if;
 								when "0111" => -- COMPARE ULA
 									alu_comando <= "0001";
 									case registerCode is
@@ -275,41 +354,61 @@ begin
 										when "0010" =>
 											alu_input1 <= reg2; -- B + R
 											alu_input2 <= reg_data;
+										when "0011" => -- A OR IMEDIATO
+											alu_input1 <= reg1;
+											--alu_input2 <= reg_data;
+										when "0111" => -- B OR IMEDIATO
+											alu_input1 <= reg2;
+										when "1011" => -- R OR IMEDIATO
+											alu_input1 <= reg_data;
 										when others =>
 											state <= FETCH;
 									end case;
-									state <= CMP1;
-								--	alu_comando <= "";
+									if registerCode = "0011" or registerCode = "0111" or registerCode = "1011" then
+										pc_reg <= std_logic_vector(unsigned(pc_reg) - 1);
+										state <= LER_IMEDIATO;
+									else
+										state <= CMP1;
+									end if;
 								when "1000" => -- JMP
 									state <= PROXIMA_LINHA_ENDERECO;
 									pc_reg <= std_logic_vector(unsigned(pc_reg) + 1);
 								when "1001" => -- JEQ
 									if(reg_flag_0 = '1') then
 											pc_reg <= std_logic_vector(unsigned(pc_reg) + 1);
-											outputPlaca <= "11111111";
 											state <= PROXIMA_LINHA_ENDERECO;
 									else state <= FETCH;
 									end if;
 								when "1010" => -- JGR
 									if(reg_flag_signal = '0' and reg_flag_0 /= '1') then
-											pc_reg <= std_logic_vector(unsigned(pc_reg) + 1);
 											state <= PROXIMA_LINHA_ENDERECO;
 									else state <= FETCH;
 									end if;
 								when "1011" => -- LOAD----------------------------------------------------------------------
 									endereco <= std_logic_vector(unsigned(pc_reg) - 1); -- endereco 5
 									habilitar_escrita <= '0';
-									--outputPlaca <= std_logic_vector(unsigned(pc_reg) - 1);
-									--pc_reg <= std_logic_vector(unsigned(pc_reg) + 1); -- Atualizar o PC									
 									state <= LOAD1;
 								when "1100" => -- STORE
 									endereco <= std_logic_vector(unsigned(pc_reg) - 1); -- endereco 5
 									habilitar_escrita <= '0';
-									--outputPlaca <= std_logic_vector(unsigned(pc_reg) - 1);
-									--pc_reg <= std_logic_vector(unsigned(pc_reg) + 1); -- Atualizar o PC									
 									state <= STORE1;
 								when "1101" => -- MOVE
-									reg1 <= reg2;
+									case registerCode is
+										when "0001" => -- reg1 para reg 2
+											reg2 <= reg1;
+										when "0100" => -- reg2 para reg1
+											reg1 <= reg2;
+										when "1000" => -- reg_data para reg1
+											reg1 <= reg_data;
+										when "0010" =>		-- reg1 para reg_data
+											reg_data <= reg1;
+										when "1001" => -- reg_data para reg2
+											reg2 <= reg_data;
+										when "0110" =>		-- reg2 para reg_data
+											reg_data <= reg2;
+										when others => 
+											state <= FETCH;
+									end case;
 									pc_reg <= std_logic_vector(unsigned(pc_reg) + 1); -- Atualizar o PC									
 									state <= FETCH;
 								when others =>
@@ -338,21 +437,17 @@ begin
 					 when CMP1 => 
 									reg_flag_0 <= alu_flag_0;
 									reg_flag_signal <= alu_flag_signal;
+									state <= CMP2;
+					 when CMP2 =>
 									pc_reg <= std_logic_vector(unsigned(pc_reg) + 1); -- Atualizar o PC									
 									state <= FETCH;
 					 when LOAD1 =>
-								--outputPlaca <= data_out;
-								--endereco <= "00001010"; -- AQUIIIIIIIIIIIIIIIIIIIIIIII
-								--habilitar_escrita <= '0';
-								--outputPlaca <= data_out; -- PRECISA DE UM INTERMEDIARIO VAZIO
 								state <= LOAD2;
 					 when LOAD2 =>
-									--pc_reg <= std_logic_vector(unsigned(pc_reg) + 1); -- Atualizar o PC																	
 								endereco <= data_out;
 								habilitar_escrita <= '0';
 								state <= LOAD3;
 					 when LOAD3 =>
-								--outputPlaca <= data_out;
 								state <= LOAD4;
 					 when LOAD4 =>
 									case registerCode is
@@ -385,10 +480,10 @@ begin
 					 when STORE3 =>
 								state <= STORE4;
 					 when STORE4 =>
-								state <= FETCH;
+								state <= FETCH;	 
 					 when others =>
-                    state <= FETCH;  -- Caso não entre em nenhum estado conhecido, voltar para Fetch	 
-            end case;
+                    state <= FETCH;  -- Caso não entre em nenhum estado conhecido, voltar para Fetch
+				end case;
         end if;
 		
 	end process;

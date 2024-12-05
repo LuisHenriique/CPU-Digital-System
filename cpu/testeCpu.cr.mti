@@ -1,13 +1,4 @@
-C:/Users/14571376/Desktop/cpu/alu.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/14571376/Desktop/cpu/alu.vhd
-Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
--- Loading package STANDARD
--- Loading package TEXTIO
--- Loading package std_logic_1164
--- Loading package NUMERIC_STD
--- Compiling entity alu
--- Compiling architecture Behavioral of alu
-
-} {} {}} C:/Users/14571376/Desktop/cpu/memoria.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/14571376/Desktop/cpu/memoria.vhd
+C:/Users/14571376/Desktop/cpu/memoria.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/14571376/Desktop/cpu/memoria.vhd
 Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
 -- Loading package STANDARD
 -- Loading package TEXTIO
@@ -15,6 +6,15 @@ Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  
 -- Loading package altera_mf_components
 -- Compiling entity memoria
 -- Compiling architecture SYN of memoria
+
+} {} {}} C:/Users/14571376/Desktop/cpu/memoria1.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/14571376/Desktop/cpu/memoria1.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity memoria1
+-- Compiling architecture behavioral of memoria1
 
 } {} {}} C:/Users/14571376/Desktop/cpu/fullAdder.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/14571376/Desktop/cpu/fullAdder.vhd
 Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
@@ -26,15 +26,6 @@ Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  
 -- Compiling entity fullAdder
 -- Compiling architecture Behavioral of fullAdder
 
-} {} {}} C:/Users/14571376/Desktop/cpu/memoria1.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/14571376/Desktop/cpu/memoria1.vhd
-Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
--- Loading package STANDARD
--- Loading package TEXTIO
--- Loading package std_logic_1164
--- Loading package NUMERIC_STD
--- Compiling entity memoria1
--- Compiling architecture behavioral of memoria1
-
 } {} {}} C:/Users/14571376/Desktop/cpu/inputUnit.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/14571376/Desktop/cpu/inputUnit.vhd
 Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
 -- Loading package STANDARD
@@ -43,16 +34,6 @@ Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  
 -- Loading package NUMERIC_STD
 -- Compiling entity inputUnit
 -- Compiling architecture Behavioral of inputUnit
-
-} {} {}} C:/Users/14571376/Desktop/cpu/fullAdder8bits.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/14571376/Desktop/cpu/fullAdder8bits.vhd
-Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
--- Loading package STANDARD
--- Loading package TEXTIO
--- Loading package std_logic_1164
--- Loading package std_logic_arith
--- Loading package STD_LOGIC_UNSIGNED
--- Compiling entity fullAdder8bits
--- Compiling architecture Behavioral of fullAdder8bits
 
 } {} {}} C:/Users/14571376/Desktop/cpu/complemento_de_dois.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/14571376/Desktop/cpu/complemento_de_dois.vhd
 Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
@@ -63,5 +44,15 @@ Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  
 -- Loading package STD_LOGIC_UNSIGNED
 -- Compiling entity complemento_de_dois
 -- Compiling architecture Behavioral of complemento_de_dois
+
+} {} {}} C:/Users/14571376/Desktop/cpu/fullAdder8bits.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Users/14571376/Desktop/cpu/fullAdder8bits.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Loading package STD_LOGIC_UNSIGNED
+-- Compiling entity fullAdder8bits
+-- Compiling architecture Behavioral of fullAdder8bits
 
 } {} {}}
